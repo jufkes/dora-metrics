@@ -2,3 +2,4 @@
 .venv/*
 *.json
 ghub-metrics/.idea/*
+ghub-metrics/processors/__pycache__/*
