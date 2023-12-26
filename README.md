@@ -1,2 +1,2 @@
-# github-metrics
-Middleware API to fetch performance metrics from github
+# dora-metrics
+Various exporters for dora type metrics
