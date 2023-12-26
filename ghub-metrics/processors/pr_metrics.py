@@ -18,3 +18,10 @@ def open_to_closed_time(pr):
   dateClosed = datetime.strptime(dateClosed, '%Y-%m-%dT%H:%M:%SZ')
   openTimeLength = dateClosed - dateCreated
   return openTimeLength
+
+def open_time(pr):
+  dateCreated = pr['created_at']
+  dateCreated = datetime.strptime(dateCreated, '%Y-%m-%dT%H:%M:%SZ')
+  currentTime = datetime.utcnow().replace(microsecond=0)
+  timeOpen = currentTime - dateCreated
+  return(timeOpen)

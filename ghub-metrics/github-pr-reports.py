@@ -1,5 +1,5 @@
-import json
 import logging
+import json
 from environs import Env
 from pymongo import MongoClient
 import certifi
@@ -46,7 +46,8 @@ if __name__ == "__main__":
       if pr_metrics.is_closed(pr):
         openTime = pr_metrics.open_to_closed_time(pr)
       else:
-        openTime = None
+        openTime = pr_metrics.open_time(pr)
+
 
       pr_record = {'state': pr['state'], 'PRNumber': pr['number'], 'draft': pr['draft'],
                    'githubUser': pr['user']['login'], 'dateCreated': pr['created_at'],
