@@ -28,3 +28,9 @@ def open_time(pr):
 
 def number_files_changed(commits):
   return len(commits)
+
+def total_number_of_changes(commits):
+  commitCount = 0
+  for c in commits:
+    commitCount = c['changes'] + commitCount
+  return commitCount

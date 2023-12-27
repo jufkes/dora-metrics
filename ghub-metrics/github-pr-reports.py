@@ -47,13 +47,15 @@ if __name__ == "__main__":
         openTime = pr_metrics.open_time(pr)
 
       commits = ghub_api.pr_files_changed(repo, pr['number'])
+      
       pr_record = {'state': pr['state'], 'PRNumber': pr['number'], 'draft': pr['draft'],
                    'githubUser': pr['user']['login'], 'dateCreated': pr['created_at'],
                    'dateClosed': pr['closed_at'], 'dateMerged': pr['merged_at'],
                    'headBranch': pr['head']['ref'], 'baseBranch': pr['base']['ref'], 'repoName': repo,
                    'merged': pr_metrics.is_merged(pr), 'closed': pr_metrics.is_closed(pr), 'openTime': str(openTime),
                    'commitDetails': {
-                      'totalFilesChanged': pr_metrics.number_files_changed(commits)
+                      'totalFilesChanged': pr_metrics.number_files_changed(commits),
+                      'totalNumberOfChanges': pr_metrics.total_number_of_changes(commits)
                       }
                    }
       logging.info(f"Updating record for PR {json.dumps(pr_record)}")
