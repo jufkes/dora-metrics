@@ -3,7 +3,7 @@ import json
 from environs import Env
 from pymongo import MongoClient
 import certifi
-from processors import pr_metrics
+from processors import pull_request
 from processors import ghub_api
 
 env = Env()
@@ -21,7 +21,7 @@ FORMAT = '%(asctime)s - %(message)s'
 logging.basicConfig(format=FORMAT,level=logging.INFO)
 
 if __name__ == "__main__":
-  collection = 'repositories'
+  pr_collection = 'PullRequests'
   db = 'dora-metrics'
 
   logging.info("Establishing client for cosmos monogdb...")
@@ -31,9 +31,9 @@ if __name__ == "__main__":
     username=MONGO_USER, password=MONGO_PASSWORD, authSource=MONGO_DATABASE,
     authMechanism='SCRAM-SHA-256', appName=MONGO_APPNAME, tlsCAFile=certifi.where())
 
-  logging.info(f"Using collection {collection} in database {db}...")
+  logging.info(f"Using collection {pr_collection} in database {db}...")
   db = client[db]
-  collection = db[collection]
+  collection = db[pr_collection]
 
   logging.info('Full list of repos to generate reports from: ' + str(GH_REPOS))
   for repo in GH_REPOS:
@@ -41,19 +41,19 @@ if __name__ == "__main__":
     prList = ghub_api.get_prs(repo)
 
     for pr in prList:
-      if pr_metrics.is_closed(pr):
-        openTime = pr_metrics.open_to_closed_time(pr)
+      if pull_request.is_closed(pr):
+        openTime = pull_request.open_to_closed_time(pr)
       else:
-        openTime = pr_metrics.open_time(pr)
+        openTime = pull_request.open_time(pr)
 
       commits = ghub_api.pr_files_changed(repo, pr['number'])
       reviews = ghub_api.pr_reviews(repo, pr['number'])
 
       if reviews:
         reviewDetails = {
-          'reviewers': pr_metrics.reviewers(reviews),
-          'count': pr_metrics.review_count(reviews),
-          'state': pr_metrics.review_state(reviews)
+          'reviewers': pull_request.reviewers(reviews),
+          'count': pull_request.review_count(reviews),
+          'state': pull_request.review_state(reviews)
         }
       else:
         reviewDetails = {}
@@ -61,10 +61,10 @@ if __name__ == "__main__":
                    'githubUser': pr['user']['login'], 'dateCreated': pr['created_at'],
                    'dateClosed': pr['closed_at'], 'dateMerged': pr['merged_at'],
                    'headBranch': pr['head']['ref'], 'baseBranch': pr['base']['ref'], 'repoName': repo,
-                   'merged': pr_metrics.is_merged(pr), 'closed': pr_metrics.is_closed(pr), 'openTime': str(openTime),
+                   'merged': pull_request.is_merged(pr), 'closed': pull_request.is_closed(pr), 'openTime': str(openTime),
                    'commitDetails': {
-                      'totalFilesChanged': pr_metrics.number_files_changed(commits),
-                      'totalNumberOfChanges': pr_metrics.total_number_of_changes(commits)
+                      'totalFilesChanged': pull_request.number_files_changed(commits),
+                      'totalNumberOfChanges': pull_request.total_number_of_changes(commits)
                       },
                    'reviewDetails': reviewDetails
                    }

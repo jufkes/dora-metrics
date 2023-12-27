@@ -9,8 +9,9 @@ env.read_env()
 #GITHUB VARS
 GH_REPO_OWNER = env('GH_REPO_OWNER', 'CenturyLinkFederal')
 GH_TOKEN = env('GH_TOKEN')
-GH_PAGES = env('GH_PAGES', 1)
+GH_PAGES = env('GH_PAGES', 2)
 GH_NUMBER_OF_PRS = env('GH_NUMBER_OF_PRS', 10)
+GH_BRANCHES_PER_PAGE = env('GH_BRANCHES_PER_PAGE', 100)
 
 # logging setup
 FORMAT = '%(asctime)s - %(message)s'
@@ -67,3 +68,25 @@ def pr_reviews(repo, pull_number):
   response = requests.request("GET", url, headers=headers, data=payload)
   json_response = json.loads(response.text)
   return json_response
+
+def branches(repo):
+  branches = []
+  totalPaging = GH_PAGES + 1
+  for page in range(1, totalPaging):
+    url = f"https://api.github.com/repos/{GH_REPO_OWNER}/{repo}/branches?per_page={GH_BRANCHES_PER_PAGE}&page={page}"
+    print(url)
+    logging.info(f"Fetching branches for pull {repo}")
+    payload = {}
+    headers = {
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'Authorization': f'Bearer {GH_TOKEN}'
+    }
+    response = requests.request("GET", url, headers=headers, data=payload)
+    json_response = json.loads(response.text)
+    logging.debug('Response from GitHub API: {}'.format(json_response))
+
+    logging.info('Generating full list of branches for processing')
+    for payload in json_response:
+      branches.append(payload)
+  return branches
