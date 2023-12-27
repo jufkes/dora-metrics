@@ -54,3 +54,16 @@ def pr_files_changed(repo, pull_number):
   response = requests.request("GET", url, headers=headers, data=payload)
   json_response = json.loads(response.text)
   return json_response
+
+def pr_reviews(repo, pull_number):
+  url = f"https://api.github.com/repos/{GH_REPO_OWNER}/{repo}/pulls/{pull_number}/reviews"
+  logging.info(f"Fetching reviews for pull {pull_number}")
+  payload = {}
+  headers = {
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'Authorization': f'Bearer {GH_TOKEN}'
+  }
+  response = requests.request("GET", url, headers=headers, data=payload)
+  json_response = json.loads(response.text)
+  return json_response

@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import json
 def is_merged(pr):
   if pr['merged_at'] is None:
     return False
@@ -34,3 +34,17 @@ def total_number_of_changes(commits):
   for c in commits:
     commitCount = c['changes'] + commitCount
   return commitCount
+
+def reviewers(reviews):
+  reviewers = []
+  for r in reviews:
+    reviewers.append(r['user']['login'])
+  return reviewers
+
+def review_state(reviews):
+  for r in reviews:
+    state = r['state']
+  return state
+
+def review_count(reviews):
+  return len(reviews)

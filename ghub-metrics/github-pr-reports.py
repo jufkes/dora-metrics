@@ -47,7 +47,16 @@ if __name__ == "__main__":
         openTime = pr_metrics.open_time(pr)
 
       commits = ghub_api.pr_files_changed(repo, pr['number'])
-      
+      reviews = ghub_api.pr_reviews(repo, pr['number'])
+
+      if reviews:
+        reviewDetails = {
+          'reviewers': pr_metrics.reviewers(reviews),
+          'count': pr_metrics.review_count(reviews),
+          'state': pr_metrics.review_state(reviews)
+        }
+      else:
+        reviewDetails = {}
       pr_record = {'state': pr['state'], 'PRNumber': pr['number'], 'draft': pr['draft'],
                    'githubUser': pr['user']['login'], 'dateCreated': pr['created_at'],
                    'dateClosed': pr['closed_at'], 'dateMerged': pr['merged_at'],
@@ -56,7 +65,8 @@ if __name__ == "__main__":
                    'commitDetails': {
                       'totalFilesChanged': pr_metrics.number_files_changed(commits),
                       'totalNumberOfChanges': pr_metrics.total_number_of_changes(commits)
-                      }
+                      },
+                   'reviewDetails': reviewDetails
                    }
       logging.info(f"Updating record for PR {json.dumps(pr_record)}")
       result = collection.update_one(
