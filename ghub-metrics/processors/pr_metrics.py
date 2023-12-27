@@ -25,3 +25,6 @@ def open_time(pr):
   currentTime = datetime.utcnow().replace(microsecond=0)
   timeOpen = currentTime - dateCreated
   return(timeOpen)
+
+def number_files_changed(commits):
+  return len(commits)

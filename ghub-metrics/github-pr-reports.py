@@ -10,8 +10,6 @@ env = Env()
 env.read_env()
 
 GH_REPOS = env.list("GH_REPOS", ['azure-templates'])
-
-# CONNECTION_STRING = env('CONNECTION_STRING')
 MONGO_USER = env('MONGO_USER', 'pygit')
 MONGO_PASSWORD = env('MONGO_PASSWORD')
 MONGO_DATABASE = env('MONGO_DATABASE', 'dora-metrics')
@@ -48,12 +46,15 @@ if __name__ == "__main__":
       else:
         openTime = pr_metrics.open_time(pr)
 
-
+      commits = ghub_api.pr_files_changed(repo, pr['number'])
       pr_record = {'state': pr['state'], 'PRNumber': pr['number'], 'draft': pr['draft'],
                    'githubUser': pr['user']['login'], 'dateCreated': pr['created_at'],
                    'dateClosed': pr['closed_at'], 'dateMerged': pr['merged_at'],
                    'headBranch': pr['head']['ref'], 'baseBranch': pr['base']['ref'], 'repoName': repo,
-                   'merged': pr_metrics.is_merged(pr), 'closed': pr_metrics.is_closed(pr), 'openTime': str(openTime)
+                   'merged': pr_metrics.is_merged(pr), 'closed': pr_metrics.is_closed(pr), 'openTime': str(openTime),
+                   'commitDetails': {
+                      'totalFilesChanged': pr_metrics.number_files_changed(commits)
+                      }
                    }
       logging.info(f"Updating record for PR {json.dumps(pr_record)}")
       result = collection.update_one(
@@ -63,4 +64,3 @@ if __name__ == "__main__":
       logging.info(f"Inserted document with _id {result.upserted_id}")
 
     logging.info('Updated: ' + str(len(prList)) + ' records')
-
