@@ -74,7 +74,6 @@ def branches(repo):
   totalPaging = GH_PAGES + 1
   for page in range(1, totalPaging):
     url = f"https://api.github.com/repos/{GH_REPO_OWNER}/{repo}/branches?per_page={GH_BRANCHES_PER_PAGE}&page={page}"
-    print(url)
     logging.info(f"Fetching branches for pull {repo}")
     payload = {}
     headers = {
@@ -90,3 +89,32 @@ def branches(repo):
     for payload in json_response:
       branches.append(payload)
   return branches
+
+def dependabot(repo):
+  #/enterprises/{enterprise}/dependabot/alerts
+  pass
+
+def actions(repo):
+  total_workflow_runs = []
+  totalPaging = GH_PAGES + 1
+  for page in range(1, totalPaging):
+    url = f"https://api.github.com/repos/{GH_REPO_OWNER}/{repo}/actions/runs?page={page}&per_page=100"
+
+    payload = {}
+    headers = {
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'Authorization': f'Bearer {GH_TOKEN}'
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    json_response = json.loads(response.text)
+    if len(json_response['workflow_runs']) == 0:
+      break
+
+    logging.info(f"Retrieving page {page}. {json_response['total_count']} total workflow runs.")
+
+    for run in json_response['workflow_runs']:
+      total_workflow_runs.append(run)
+  return total_workflow_runs
