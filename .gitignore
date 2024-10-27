@@ -3,3 +3,6 @@
 *.json
 ghub-metrics/.idea/*
 ghub-metrics/processors/__pycache__/*
+jira-data/.idea/*
+jira-data/handlers/__pycache__/*
+jira-data/processors/__pycache__/*

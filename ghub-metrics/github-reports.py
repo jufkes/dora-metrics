@@ -142,6 +142,6 @@ def actions_reports():
             logging.info(f"Inserted document with _id {result.upserted_id}")
 
 if __name__ == "__main__":
-  # pr_reports()
-  # repo_reports()
+  pr_reports()
+  repo_reports()
   actions_reports()
