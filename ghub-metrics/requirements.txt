@@ -1,7 +1,7 @@
 azure-core==1.29.4
 azure-data-tables==12.4.4
 azure-storage-blob==12.18.1
-certifi==2023.7.22
+certifi==2024.7.4
 cffi==1.15.1
 charset-normalizer==3.2.0
 cryptography==41.0.4
